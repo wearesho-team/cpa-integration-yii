@@ -13,8 +13,19 @@ use Wearesho\Cpa\Interfaces\LeadRepositoryInterface;
  */
 class LeadSessionRepository implements LeadRepositoryInterface
 {
+    const DEFAULT_SESSION_KEY = "cpa";
+
     /** @var string */
-    protected $sessionKey = "cpa";
+    protected $sessionKey = self::DEFAULT_SESSION_KEY;
+
+    /**
+     * LeadSessionRepository constructor.
+     * @param string $sessionKey
+     */
+    public function __construct(string $sessionKey = self::DEFAULT_SESSION_KEY)
+    {
+        $this->setSessionKey($sessionKey);
+    }
 
     /**
      * @return string
@@ -28,7 +39,7 @@ class LeadSessionRepository implements LeadRepositoryInterface
      * @param string $sessionKey
      * @return $this
      */
-    public function setSessionKey(string $sessionKey = "cpa")
+    public function setSessionKey(string $sessionKey = self::DEFAULT_SESSION_KEY)
     {
         $this->sessionKey = $sessionKey;
         return $this;
