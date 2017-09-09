@@ -1,8 +1,16 @@
-# yii2-base
-Some extensions for Yii2 Framework
+# CPA Integration for Yii2
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Horat1us/yii2-base/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Horat1us/yii2-base/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/Horat1us/yii2-base/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Horat1us/yii2-base/build-status/master)
-[![Code Coverage](https://scrutinizer-ci.com/g/Horat1us/yii2-base/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Horat1us/yii2-base/?branch=master)
+[![codecov](https://codecov.io/gh/wearesho-team/cpa-integration-yii/branch/master/graph/badge.svg)](https://codecov.io/gh/wearesho-team/cpa-integration-yii)
+[![Build Status](https://travis-ci.org/wearesho-team/cpa-integration-yii.svg?branch=master)](https://travis-ci.org/wearesho-team/cpa-integration-yii)
+[![License](https://poser.pugx.org/wearesho-team/cpa-integration-yii/license)](https://packagist.org/packages/wearesho-team/cpa-integration-yii)
+[![Latest Stable Version](https://poser.pugx.org/wearesho-team/cpa-integration-yii/version)](https://packagist.org/packages/wearesho-team/cpa-integration-yii)
 
 
+See [original repository](https://github.com/wearesho-team/cpa-integration) for details.
+
+
+## Contributors
+1. [Alexander <horat1us> Letnikow](https://github.com/Horat1us)
+
+## License
+[MIT](./LICENSE)
