@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f95ecae33f04ed43b6a7f1b0fcea8de",
+    "content-hash": "60970b71d085adfe43683534fef3739f",
     "packages": [
         {
             "name": "bower-asset/jquery",
@@ -609,16 +609,16 @@
         },
         {
             "name": "wearesho-team/cpa-integration",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wearesho-team/cpa-integration.git",
-                "reference": "35065caf3499679a84645197d8bc37d9d2407408"
+                "reference": "aaabb51fd8b7f66316540429fac7e51863127c06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wearesho-team/cpa-integration/zipball/35065caf3499679a84645197d8bc37d9d2407408",
-                "reference": "35065caf3499679a84645197d8bc37d9d2407408",
+                "url": "https://api.github.com/repos/wearesho-team/cpa-integration/zipball/aaabb51fd8b7f66316540429fac7e51863127c06",
+                "reference": "aaabb51fd8b7f66316540429fac7e51863127c06",
                 "shasum": ""
             },
             "require": {
@@ -646,7 +646,17 @@
                 }
             ],
             "description": "CPA Networks postback integration",
-            "time": "2017-09-09T15:33:32+00:00"
+            "keywords": [
+                "admitad",
+                "cpa",
+                "extension",
+                "horat1us",
+                "loangate",
+                "primelead",
+                "salesdoubler",
+                "wearesho"
+            ],
+            "time": "2017-09-09T17:46:19+00:00"
         },
         {
             "name": "yiisoft/yii2",
