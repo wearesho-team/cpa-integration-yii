@@ -1,0 +1,42 @@
+{
+  "name": "wearesho-team/cpa-integration-yii",
+  "description": "Yii2 integration of wearesho/cpa-integration",
+  "type": "library",
+  "require": {
+    "php": ">=7.0",
+    "yiisoft/yii2": "^2.0.11"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.2"
+  },
+  "keywords": [
+    "yii2",
+    "extension",
+    "widget",
+    "horat1us",
+    "base",
+    "wearesho",
+    "cpa",
+    "loangate",
+    "primelead",
+    "salesdoubler",
+    "admitad"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alexander Letnikow",
+      "email": "reclamme@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Horat1us\\Yii\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Horat1us\\Yii\\": "tests/"
+    }
+  }
+}
