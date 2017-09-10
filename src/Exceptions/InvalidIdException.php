@@ -23,7 +23,7 @@ class InvalidIdException extends CpaException
      */
     public function __construct(IdentityInterface $identity, $code = 0, \Throwable $previous = null)
     {
-        $message = "Invalid or empty ID";
+        $message = "Invalid or empty ID of " . get_class($identity);
         parent::__construct($message, $code, $previous);
 
         $this->identity = $identity;
