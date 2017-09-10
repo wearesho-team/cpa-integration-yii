@@ -21,22 +21,6 @@ class LeadBehavior extends Behavior
 {
     const DEFAULT_COOKIE_NAME = "cpa";
 
-    /**
-     * This event will be triggered on owner by behavior if lead correctly generated.
-     * It will pass Event with data:
-     *
-     * ```php
-     * new Event([
-     *   'data' => [
-     *      'lead' => $lead, // lead implement \Wearesho\Cpa\Interfaces\LeadInterface,
-     *   ],
-     * ]);
-     * ```
-     *
-     * @see LeadInterface
-     */
-    const EVENT_LEAD_GENERATED = "onLeadGenerated";
-
     /** @var LeadFactoryInterface[]|callable See common LeadFactory from wearesho-team/cpa-integration */
     public $factories = null;
 
@@ -78,7 +62,7 @@ class LeadBehavior extends Behavior
     /**
      * @return void
      */
-    protected function generateLead()
+    public function generateLead()
     {
         $factory = new LeadFactory(
             is_callable($this->factories)
@@ -92,7 +76,7 @@ class LeadBehavior extends Behavior
             return;
         }
 
-        $lead = $factory->fromCookie(\Yii::$app->request->cookies->get($this->cookieName));
+        $lead = $factory->fromCookie(\Yii::$app->request->cookies->get($this->cookieName) ?? "");
         if ($lead instanceof LeadInterface) {
             $this->getLeadRepository()->push($lead);
             \Yii::$app->response->cookies->remove($this->cookieName);

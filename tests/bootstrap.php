@@ -8,6 +8,7 @@ use yii\db\Migration;
 use yii\db\Connection;
 
 use yii\web\Session;
+use yii\web\Request as WebRequest;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 require_once dirname(__DIR__) . '/vendor/yiisoft/yii2/Yii.php';
@@ -34,6 +35,10 @@ function init_application()
             ],
             'session' => [
                 'class' => Session::class,
+            ],
+            'request' => [
+                'class' => WebRequest::class,
+                'cookieValidationKey' => mt_rand(),
             ],
         ],
     ];

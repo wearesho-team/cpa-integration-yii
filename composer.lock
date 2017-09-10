@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "deaca662573ceb61d36d4b2a40173eca",
+    "content-hash": "3eefe2baf1945308f50d9e4f8b60ce4b",
     "packages": [
         {
             "name": "bower-asset/jquery",
@@ -609,16 +609,16 @@
         },
         {
             "name": "wearesho-team/cpa-integration",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wearesho-team/cpa-integration.git",
-                "reference": "10e81f31d282c750cdebe57b99a6d8be70da4a84"
+                "reference": "6b78d2315e893ecf09132ae3e9d8e8c1b5ae6291"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wearesho-team/cpa-integration/zipball/10e81f31d282c750cdebe57b99a6d8be70da4a84",
-                "reference": "10e81f31d282c750cdebe57b99a6d8be70da4a84",
+                "url": "https://api.github.com/repos/wearesho-team/cpa-integration/zipball/6b78d2315e893ecf09132ae3e9d8e8c1b5ae6291",
+                "reference": "6b78d2315e893ecf09132ae3e9d8e8c1b5ae6291",
                 "shasum": ""
             },
             "require": {
@@ -656,7 +656,7 @@
                 "salesdoubler",
                 "wearesho"
             ],
-            "time": "2017-09-10T06:59:55+00:00"
+            "time": "2017-09-10T14:44:48+00:00"
         },
         {
             "name": "yiisoft/yii2",
