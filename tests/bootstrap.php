@@ -7,6 +7,8 @@ use yii\console\Application;
 use yii\db\Migration;
 use yii\db\Connection;
 
+use yii\web\Session;
+
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 require_once dirname(__DIR__) . '/vendor/yiisoft/yii2/Yii.php';
 
@@ -29,6 +31,9 @@ function init_application()
             ],
             'user' => [
                 'class' => User::class,
+            ],
+            'session' => [
+                'class' => Session::class,
             ],
         ],
     ];

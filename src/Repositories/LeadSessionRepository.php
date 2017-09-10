@@ -18,6 +18,8 @@ class LeadSessionRepository implements LeadRepositoryInterface
     /** @var string */
     protected $sessionKey = self::DEFAULT_SESSION_KEY;
 
+    protected $session;
+
     /**
      * LeadSessionRepository constructor.
      * @param string $sessionKey
