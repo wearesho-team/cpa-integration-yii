@@ -2,25 +2,25 @@
 
 namespace Wearesho\Cpa\Yii\Behaviors;
 
-use Wearesho\Cpa\Interfaces\LeadRepositoryInterface;
-use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
 use yii\base\Event;
 use yii\base\Behavior;
 
 use GuzzleHttp\Client;
 
 use Wearesho\Cpa\Interfaces\LeadInterface;
-use Wearesho\Cpa\Interfaces\PostbackServiceInterface;
+use Wearesho\Cpa\Interfaces\ConversionRepositoryInterface;
+use Wearesho\Cpa\Interfaces\LeadRepositoryInterface;
 use Wearesho\Cpa\Postback\PostbackService;
 use Wearesho\Cpa\Postback\PostbackServiceConfig;
 use Wearesho\Cpa\Yii\Repositories\ConversionRepository;
+use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
 
 /**
  * Class SendConversionBehavior
  * @package Wearesho\Cpa\Yii\Behaviors
  *
- * @property \Closure $id
  * @property \Closure $config
+ * @property ConversionRepositoryInterface $conversionRepository
  * @property LeadRepositoryInterface $leadRepository
  */
 class ConversionBehavior extends Behavior
@@ -52,21 +52,6 @@ class ConversionBehavior extends Behavior
      * ```
      */
     const EVENT_CONVERSION_SENT = 'onConversionSent';
-
-    /**
-     * This event will be triggered if some exception thrown while sending conversion.
-     * Behavior will provide event with data:
-     *
-     * ```php
-     * new Event([
-     *  'data' => [
-     *    'exception' => $exception,
-     *  ],
-     * ]);
-     * ```
-     * @see PostbackServiceInterface::send() - List of exceptions may be thrown
-     */
-    const EVENT_CONVERSION_ERROR = 'onConversionError';
 
     /** @var string Key for session storage where lead will be stored */
     public $key = "cpa-lead";
@@ -111,6 +96,24 @@ class ConversionBehavior extends Behavior
     }
 
     /**
+     * @return ConversionRepositoryInterface
+     */
+    public function getConversionRepository(): ConversionRepositoryInterface
+    {
+        return $this->conversionRepository ?? ($this->conversionRepository = new ConversionRepository());
+    }
+
+    /**
+     * @param ConversionRepositoryInterface $conversionRepository
+     * @return $this
+     */
+    public function setConversionRepository(ConversionRepositoryInterface $conversionRepository): self
+    {
+        $this->conversionRepository = $conversionRepository;
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function events()
@@ -142,30 +145,19 @@ class ConversionBehavior extends Behavior
         $client = new $this->httpClient;
 
         $service = new PostbackService(
-            new ConversionRepository(),
+            $this->getConversionRepository(),
             $client,
             $config
         );
 
-        try {
-            $service->send($conversion);
-            $this->owner->trigger(
-                static::EVENT_CONVERSION_SENT,
-                new Event([
-                    'data' => [
-                        'conversion' => $conversion,
-                    ],
-                ])
-            );
-        } catch (\Exception $exception) {
-            $this->owner->trigger(
-                static::EVENT_CONVERSION_ERROR,
-                new Event([
-                    'data' => [
-                        'exception' => $exception,
-                    ],
-                ])
-            );
-        }
+        $service->send($conversion);
+        $this->owner->trigger(
+            static::EVENT_CONVERSION_SENT,
+            new Event([
+                'data' => [
+                    'conversion' => $conversion,
+                ],
+            ])
+        );
     }
 }

@@ -19,6 +19,8 @@ use Wearesho\Cpa\Lead\LeadFactory;
  */
 class LeadBehavior extends Behavior
 {
+    const DEFAULT_COOKIE_NAME = "cpa";
+
     /**
      * This event will be triggered on owner by behavior if lead correctly generated.
      * It will pass Event with data:
@@ -42,7 +44,7 @@ class LeadBehavior extends Behavior
     public $url;
 
     /** @var string Cookie to parse lead from if no lead found in URL */
-    public $cookieName;
+    public $cookieName = self::DEFAULT_COOKIE_NAME;
 
     /**
      * @return array
@@ -82,6 +84,13 @@ class LeadBehavior extends Behavior
         $lead = $factory->fromUrl($this->url ?? \Yii::$app->request->url);
         if ($lead instanceof LeadInterface) {
             $this->getLeadRepository()->push($lead);
+            return;
+        }
+
+        $lead = $factory->fromCookie(\Yii::$app->request->cookies->get($this->cookieName));
+        if ($lead instanceof LeadInterface) {
+            $this->getLeadRepository()->push($lead);
+            \Yii::$app->response->cookies->remove($this->cookieName);
         }
     }
 }
