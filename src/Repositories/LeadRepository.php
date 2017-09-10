@@ -21,7 +21,7 @@ use yii\web\IdentityInterface;
 class LeadRepository implements LeadRepositoryInterface
 {
     /** @var StoredLeadInterface */
-    protected $storedLeadModel;
+    protected $storeLeadModel;
 
     /** @var  IdentityInterface */
     protected $identity;
@@ -34,7 +34,7 @@ class LeadRepository implements LeadRepositoryInterface
      */
     public function __construct(IdentityInterface $identity = null, StoredLeadInterface $lead = null)
     {
-        $this->storedLeadModel = $lead ?? new StoredLead;
+        $this->storeLeadModel = $lead ?? new StoredLead;
         $this->identity = $identity ?? \Yii::$app->user;
     }
 
@@ -59,7 +59,7 @@ class LeadRepository implements LeadRepositoryInterface
             $previousModel->delete();
         }
 
-        $modelClass = get_class($this->storedLeadModel);
+        $modelClass = get_class($this->storeLeadModel);
 
         /** @var StoredLeadInterface $model */
         $model = new $modelClass;
@@ -96,7 +96,7 @@ class LeadRepository implements LeadRepositoryInterface
      */
     private function findModel()
     {
-        return $this->storedLeadModel->find()
+        return $this->storeLeadModel->find()
             ->andWhere(['=', 'user_id', $this->identity->getId()])
             ->one();
     }

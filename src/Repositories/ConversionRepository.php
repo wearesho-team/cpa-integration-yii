@@ -11,7 +11,9 @@ use Wearesho\Cpa\Interfaces\ConversionRepositoryInterface;
 use Wearesho\Cpa\Interfaces\StoredConversionInterface;
 
 use Wearesho\Cpa\Yii\Exceptions\ValidationException;
-use Wearesho\Cpa\Yii\Models\StoredConversion;
+use Wearesho\Cpa\Yii\Models\StoredConversionRecord;
+use Wearesho\Cpa\Yii\Models\StoredConversionRecordInterface;
+use yii\base\Model;
 
 /**
  * Class ConversionRepository
@@ -19,6 +21,17 @@ use Wearesho\Cpa\Yii\Models\StoredConversion;
  */
 class ConversionRepository implements ConversionRepositoryInterface
 {
+    /** @var  StoredConversionRecordInterface */
+    protected $storeConversionModel;
+
+    /**
+     * ConversionRepository constructor.
+     * @param StoredConversionRecordInterface $conversionRecord
+     */
+    public function __construct(StoredConversionRecordInterface $conversionRecord = null)
+    {
+        $this->storeConversionModel = $conversionRecord ?? new StoredConversionRecord;
+    }
 
     /**
      * Saving sent conversion in storage
@@ -33,15 +46,20 @@ class ConversionRepository implements ConversionRepositoryInterface
      */
     public function push(ConversionInterface $conversion, ResponseInterface $response): StoredConversionInterface
     {
-        $storedConversion = new StoredConversion();
+        $storedConversionClass = get_class($this->storeConversionModel);
+
+        /** @var StoredConversionRecordInterface $storedConversion */
+        $storedConversion = new $storedConversionClass;
         $storedConversion->setConversion($conversion);
         $storedConversion->setResponse($response);
 
-        if (!$storedConversion->save()) {
+        if (!$storedConversion->save() && $storedConversion instanceof Model) {
             if ($storedConversion->hasErrors('type')) {
                 throw new DuplicatedConversionException($conversion);
             }
+            // @codeCoverageIgnoreStart
             throw new ValidationException($storedConversion);
+            // @codeCoverageIgnoreEnd
         }
 
         return $storedConversion;
@@ -55,7 +73,7 @@ class ConversionRepository implements ConversionRepositoryInterface
      */
     public function pull($conversionId, string $type)
     {
-        return StoredConversion::find()
+        return $this->storeConversionModel->find()
             ->andWhere(['=', 'type', $type])
             ->andWhere(['=', 'id', $conversionId])
             ->one();

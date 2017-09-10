@@ -10,13 +10,13 @@ class m170910_122053_create_stored_conversion_table extends Migration
     /**
      * @inheritdoc
      */
-    public function up()
+    public function safeUp()
     {
         $this->createTable('stored_conversion', [
             'id' => $this->integer()->unsigned()->notNull(),
             'type' => $this->string()->notNull(),
-            'serialized_conversion' => $this->text()->notNull(),
-            'serialized_response' => $this->text()->notNull(),
+            'conversion_serialized' => $this->text()->notNull(),
+            'response_serialized' => $this->text()->notNull(),
         ]);
 
         if ($this->getDb()->getDriverName() !== 'sqlite') {
@@ -38,7 +38,7 @@ class m170910_122053_create_stored_conversion_table extends Migration
     /**
      * @inheritdoc
      */
-    public function down()
+    public function safeDown()
     {
         $this->dropTable('stored_conversion');
     }

@@ -19,14 +19,14 @@ use Wearesho\Cpa\Interfaces\StoredConversionInterface;
  * @property-read string $conversion_serialized
  * @property-read string $response_serialized
  */
-class StoredConversion extends ActiveRecord implements StoredConversionInterface
+class StoredConversionRecord extends ActiveRecord implements StoredConversionRecordInterface
 {
     /**
      * @return string
      */
     public static function tableName()
     {
-        return "conversion";
+        return "stored_conversion";
     }
 
     /**
@@ -44,13 +44,13 @@ class StoredConversion extends ActiveRecord implements StoredConversionInterface
 
     /**
      * @param ConversionInterface $conversion
-     * @return StoredConversion
+     * @return StoredConversionRecordInterface
      */
-    public function setConversion(ConversionInterface $conversion): self
+    public function setConversion(ConversionInterface $conversion): StoredConversionRecordInterface
     {
         $this->id = $conversion->getId();
         $this->type = get_class($conversion);
-        $this->conversion_serialized = $conversion;
+        $this->conversion_serialized = serialize($conversion);
 
         return $this;
     }
@@ -65,11 +65,11 @@ class StoredConversion extends ActiveRecord implements StoredConversionInterface
 
     /**
      * @param ResponseInterface $response
-     * @return StoredConversion
+     * @return StoredConversionRecordInterface
      */
-    public function setResponse(ResponseInterface $response): self
+    public function setResponse(ResponseInterface $response): StoredConversionRecordInterface
     {
-        $this->response_serialized = $response;
+        $this->response_serialized = serialize($response);
         return $this;
     }
 

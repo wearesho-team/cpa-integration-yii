@@ -10,7 +10,7 @@ class m170910_122042_create_stored_lead_table extends Migration
     /**
      * @inheritdoc
      */
-    public function up()
+    public function safeUp()
     {
         $this->createTable('stored_lead', [
             'id' => $this->primaryKey(),
@@ -29,7 +29,7 @@ class m170910_122042_create_stored_lead_table extends Migration
     /**
      * @inheritdoc
      */
-    public function down()
+    public function safeDown()
     {
         $this->dropIndex('stored_lead_unique_user', 'stored_lead');
         $this->dropTable('stored_lead');
