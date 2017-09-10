@@ -1,6 +1,6 @@
 <?php
 
-namespace Wearesho\Cpa\Yii\Tests\Models;
+namespace Wearesho\Cpa\Yii\Tests\Exceptions;
 
 use PHPUnit\Framework\TestCase;
 
