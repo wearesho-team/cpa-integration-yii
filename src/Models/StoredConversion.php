@@ -1,6 +1,6 @@
 <?php
 
-namespace Wearesho\Cpa\Yii\Repositories;
+namespace Wearesho\Cpa\Yii\Models;
 
 
 use yii\db\ActiveRecord;

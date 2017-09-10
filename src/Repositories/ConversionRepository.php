@@ -9,7 +9,9 @@ use Wearesho\Cpa\Exceptions\DuplicatedConversionException;
 use Wearesho\Cpa\Interfaces\ConversionInterface;
 use Wearesho\Cpa\Interfaces\ConversionRepositoryInterface;
 use Wearesho\Cpa\Interfaces\StoredConversionInterface;
+
 use Wearesho\Cpa\Yii\Exceptions\ValidationException;
+use Wearesho\Cpa\Yii\Models\StoredConversion;
 
 /**
  * Class ConversionRepository
