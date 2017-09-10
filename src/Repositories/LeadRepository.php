@@ -10,6 +10,7 @@ use Wearesho\Cpa\Yii\Exceptions\InvalidIdException;
 use Wearesho\Cpa\Yii\Exceptions\ValidationException;
 use Wearesho\Cpa\Yii\Models\StoredLead;
 use Wearesho\Cpa\Yii\Models\StoredLeadInterface;
+
 use yii\base\Model;
 use yii\web\IdentityInterface;
 
@@ -31,7 +32,7 @@ class LeadRepository implements LeadRepositoryInterface
      * @param StoredLeadInterface|null $lead
      * @param IdentityInterface|null $identity
      */
-    public function __construct(StoredLeadInterface $lead = null, IdentityInterface $identity = null)
+    public function __construct(IdentityInterface $identity = null, StoredLeadInterface $lead = null)
     {
         $this->storedLeadModel = $lead ?? new StoredLead;
         $this->identity = $identity ?? \Yii::$app->user;
@@ -64,9 +65,11 @@ class LeadRepository implements LeadRepositoryInterface
         $model = new $modelClass;
         $model->setIdentity($this->identity);
         $model->setLead($lead);
+        // @codeCoverageIgnoreStart
         if (!$model->save() && $model instanceof Model) {
             throw new ValidationException($model);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**

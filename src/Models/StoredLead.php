@@ -40,9 +40,9 @@ class StoredLead extends ActiveRecord implements StoredLeadInterface
 
     /**
      * @param LeadInterface $lead
-     * @return $this
+     * @return StoredLeadInterface
      */
-    public function setLead(LeadInterface $lead): self
+    public function setLead(LeadInterface $lead): StoredLeadInterface
     {
         $this->serialized_lead = serialize($lead);
         return $this;

@@ -1,6 +1,9 @@
 <phpunit bootstrap="./tests/bootstrap.php" backupGlobals="false" colors="true">
+    <php>
+        <env name="DB_PATH" value="./tests/database.sqlite"/>
+    </php>
     <testsuites>
-        <testsuite name="Test Suite">
+        <testsuite name="test">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
