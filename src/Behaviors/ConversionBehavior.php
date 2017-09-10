@@ -19,7 +19,6 @@ use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
  * Class SendConversionBehavior
  * @package Wearesho\Cpa\Yii\Behaviors
  *
- * @property \Closure $config
  * @property ConversionRepositoryInterface $conversionRepository
  * @property LeadRepositoryInterface $leadRepository
  */
@@ -59,23 +58,8 @@ class ConversionBehavior extends Behavior
     /** @var string Class implement \GuzzleHttp\ClientInterface */
     public $httpClient = Client::class;
 
-    /**
-     * @return callable
-     */
-    public function getConfig(): callable
-    {
-        return $this->config;
-    }
-
-    /**
-     * @param callable $config
-     * @return $this
-     */
-    public function setConfig(callable $config): self
-    {
-        $this->config = $config;
-        return $this;
-    }
+    /** @var array|callable */
+    public $config = [];
 
     /**
      * @return LeadRepositoryInterface
@@ -141,7 +125,11 @@ class ConversionBehavior extends Behavior
         }
 
         $conversion = $lead->createConversion($conversionId);
-        $config = new PostbackServiceConfig(call_user_func($this->getConfig()));
+        $config = new PostbackServiceConfig(
+            is_callable($this->config)
+                ? call_user_func($this->config)
+                : (array)$this->config
+        );
         $client = new $this->httpClient;
 
         $service = new PostbackService(

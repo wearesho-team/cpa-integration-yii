@@ -37,10 +37,10 @@ class LeadBehavior extends Behavior
      */
     const EVENT_LEAD_GENERATED = "onLeadGenerated";
 
-    /** @var LeadFactoryInterface[] See common LeadFactory from wearesho-team/cpa-integration */
+    /** @var LeadFactoryInterface[]|callable See common LeadFactory from wearesho-team/cpa-integration */
     public $factories = null;
 
-    /** @var string Url to parse (\Yii::$app->request->url will be used by default) */
+    /** @var string|callable Url to parse (\Yii::$app->request->url will be used by default) */
     public $url;
 
     /** @var string Cookie to parse lead from if no lead found in URL */
@@ -80,8 +80,13 @@ class LeadBehavior extends Behavior
      */
     protected function generateLead()
     {
-        $factory = new LeadFactory($this->factories);
-        $lead = $factory->fromUrl($this->url ?? \Yii::$app->request->url);
+        $factory = new LeadFactory(
+            is_callable($this->factories)
+                ? call_user_func($this->factories)
+                : $this->factories
+        );
+
+        $lead = $factory->fromUrl($this->getUrl());
         if ($lead instanceof LeadInterface) {
             $this->getLeadRepository()->push($lead);
             return;
@@ -92,5 +97,17 @@ class LeadBehavior extends Behavior
             $this->getLeadRepository()->push($lead);
             \Yii::$app->response->cookies->remove($this->cookieName);
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function getUrl(): string
+    {
+        if (is_null($this->url)) {
+            return \Yii::$app->request->url;
+        }
+
+        return is_callable($this->url) ? call_user_func($this->url) : (string)$this->url;
     }
 }
