@@ -2,10 +2,13 @@
 
 namespace Wearesho\Cpa\Yii\Behaviors;
 
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client;
+
+use Wearesho\Cpa\Interfaces\PostbackServiceInterface;
+use Wearesho\Cpa\Yii\Interfaces\ConversionSourceInterface;
 use yii\base\Event;
 use yii\base\Behavior;
-
-use GuzzleHttp\Client;
 
 use Wearesho\Cpa\Interfaces\LeadInterface;
 use Wearesho\Cpa\Interfaces\ConversionRepositoryInterface;
@@ -14,6 +17,7 @@ use Wearesho\Cpa\Postback\PostbackService;
 use Wearesho\Cpa\Postback\PostbackServiceConfig;
 use Wearesho\Cpa\Yii\Repositories\ConversionRepository;
 use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
+use yii\base\InvalidCallException;
 
 /**
  * Class SendConversionBehavior
@@ -38,28 +42,20 @@ class ConversionBehavior extends Behavior
      */
     const EVENT_CONVERSION_REGISTERED = 'onConversionRegistered';
 
-    /**
-     * This event will be triggered by behavior when conversion created and sent successfully
-     * Behavior will provide event with data:
-     *
-     * ```php
-     * new Event([
-     *  'data' => [
-     *    'conversion' => $conversion, // StoredConversionInterface instance
-     *  ],
-     * ]);
-     * ```
-     */
-    const EVENT_CONVERSION_SENT = 'onConversionSent';
-
-    /** @var string Key for session storage where lead will be stored */
-    public $key = "cpa-lead";
-
-    /** @var string Class implement \GuzzleHttp\ClientInterface */
-    public $httpClient = Client::class;
+    /** @var ClientInterface|callable */
+    public $httpClient = null;
 
     /** @var array|callable */
-    public $config = [];
+    public $postbackConfig = [];
+
+    /** @var PostbackServiceInterface[]|callable */
+    public $postbackServices = null;
+
+    public function init()
+    {
+        parent::init();
+        $this->httpClient = $this->httpClient ?? new Client;
+    }
 
     /**
      * @return LeadRepositoryInterface
@@ -112,11 +108,10 @@ class ConversionBehavior extends Behavior
      * @throws \Exception
      * @return void
      */
-    protected function sendConversion(Event $event)
+    public function sendConversion(Event $event)
     {
-        $conversionId = $event->data['id'] ?? null;
-        if (is_null($conversionId)) {
-            return;
+        if (!$event->sender instanceof ConversionSourceInterface) {
+            throw new InvalidCallException("Event sender must implement " . ConversionSourceInterface::class);
         }
 
         $lead = $this->leadRepository->pull();
@@ -124,28 +119,44 @@ class ConversionBehavior extends Behavior
             return;
         }
 
-        $conversion = $lead->createConversion($conversionId);
-        $config = new PostbackServiceConfig(
-            is_callable($this->config)
-                ? call_user_func($this->config)
-                : (array)$this->config
-        );
-        $client = new $this->httpClient;
-
+        $conversion = $lead->createConversion($event->sender->getConversionId());
         $service = new PostbackService(
             $this->getConversionRepository(),
-            $client,
-            $config
+            $this->getClient(),
+            new PostbackServiceConfig($this->getConfig()),
+            $this->getServices()
         );
 
         $service->send($conversion);
-        $this->owner->trigger(
-            static::EVENT_CONVERSION_SENT,
-            new Event([
-                'data' => [
-                    'conversion' => $conversion,
-                ],
-            ])
-        );
+    }
+
+    /**
+     * @return PostbackServiceInterface[]|null
+     */
+    private function getServices()
+    {
+        return is_callable($this->postbackServices)
+            ? call_user_func($this->postbackServices)
+            : $this->postbackServices;
+    }
+
+    /**
+     * @return ClientInterface
+     */
+    private function getClient(): ClientInterface
+    {
+        return is_callable($this->httpClient)
+            ? call_user_func($this->httpClient)
+            : $this->httpClient;
+    }
+
+    /**
+     * @return array
+     */
+    private function getConfig(): array
+    {
+        return is_callable($this->postbackConfig)
+            ? call_user_func($this->postbackConfig)
+            : $this->postbackConfig;
     }
 }

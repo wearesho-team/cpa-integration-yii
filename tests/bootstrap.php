@@ -9,6 +9,7 @@ use yii\db\Connection;
 
 use yii\web\Session;
 use yii\web\Request as WebRequest;
+use yii\web\Response as WebResponse;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 require_once dirname(__DIR__) . '/vendor/yiisoft/yii2/Yii.php';
@@ -39,6 +40,9 @@ function init_application()
             'request' => [
                 'class' => WebRequest::class,
                 'cookieValidationKey' => mt_rand(),
+            ],
+            'response' => [
+                'class' => WebResponse::class,
             ],
         ],
     ];

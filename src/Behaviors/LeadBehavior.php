@@ -2,14 +2,19 @@
 
 namespace Wearesho\Cpa\Yii\Behaviors;
 
-use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
 use yii\base\Behavior;
+use yii\base\InvalidConfigException;
+
 use yii\console\Controller;
+
+use yii\web\Cookie;
 
 use Wearesho\Cpa\Interfaces\LeadFactoryInterface;
 use Wearesho\Cpa\Interfaces\LeadInterface;
 use Wearesho\Cpa\Interfaces\LeadRepositoryInterface;
 use Wearesho\Cpa\Lead\LeadFactory;
+
+use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
 
 /**
  * Class StoreLeadBehavior
@@ -27,8 +32,8 @@ class LeadBehavior extends Behavior
     /** @var string|callable Url to parse (\Yii::$app->request->url will be used by default) */
     public $url;
 
-    /** @var string Cookie to parse lead from if no lead found in URL */
-    public $cookieName = self::DEFAULT_COOKIE_NAME;
+    /** @var string Cookie|null|callable to parse lead from if no lead found in URL */
+    public $cookie = false;
 
     /**
      * @return array
@@ -76,10 +81,11 @@ class LeadBehavior extends Behavior
             return;
         }
 
-        $lead = $factory->fromCookie(\Yii::$app->request->cookies->get($this->cookieName) ?? "");
+        $cookie = $this->getCookie();
+        $lead = $factory->fromCookie($cookie ? $cookie->value : "");
         if ($lead instanceof LeadInterface) {
             $this->getLeadRepository()->push($lead);
-            \Yii::$app->response->cookies->remove($this->cookieName);
+            \Yii::$app->response->cookies->remove($cookie->name);
         }
     }
 
@@ -89,9 +95,40 @@ class LeadBehavior extends Behavior
     private function getUrl(): string
     {
         if (is_null($this->url)) {
-            return \Yii::$app->request->url;
+            try {
+                return \Yii::$app->request->url;
+            } catch (InvalidConfigException $exception) {
+                return "/";
+            }
+
         }
 
         return is_callable($this->url) ? call_user_func($this->url) : (string)$this->url;
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @return Cookie|null
+     */
+    private function getCookie()
+    {
+        if ($this->cookie === false) {
+            return \Yii::$app->request->cookies->get(static::DEFAULT_COOKIE_NAME);
+        }
+
+        if ($this->cookie instanceof Cookie || is_null($this->cookie)) {
+            return $this->cookie;
+        }
+
+        if (
+            is_callable($this->cookie) &&
+            ($cookie = call_user_func($this->cookie)) instanceof Cookie
+        ) {
+            return $cookie;
+        }
+
+        throw new InvalidConfigException(
+            "Cookie must be instance of " . Cookie::class . " or callable returns " . Cookie::class
+        );
     }
 }

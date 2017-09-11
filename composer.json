@@ -37,7 +37,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Wearesho\\Cpa\\Yii\\Tests\\": "tests/"
+      "Wearesho\\Cpa\\Yii\\Tests\\": "tests/",
+      "Wearesho\\Cpa\\Tests\\": "vendor/wearesho-team/cpa-integration/tests"
     }
   }
 }

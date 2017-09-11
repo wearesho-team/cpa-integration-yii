@@ -2,8 +2,12 @@
 
 namespace Wearesho\Cpa\Yii\Tests\Behaviors;
 
+use Wearesho\Cpa\Lead\LeadFactory;
 use yii\base\Component;
 use yii\base\Controller;
+use yii\base\InvalidConfigException;
+
+use yii\web\Cookie;
 
 use Wearesho\Cpa\Yii\Behaviors\LeadBehavior;
 use Wearesho\Cpa\Yii\Repositories\LeadRepository;
@@ -11,6 +15,8 @@ use Wearesho\Cpa\Yii\Repositories\LeadSessionRepository;
 use Wearesho\Cpa\Yii\Tests\AbstractTestCase;
 
 use Wearesho\Cpa\PrimeLead\Lead as PrimeLeadLead;
+
+use Wearesho\Cpa\SalesDoubler\LeadFactory as SalesDoublerLeadFactory;
 
 /**
  * Class LeadBehaviorTest
@@ -76,5 +82,81 @@ class LeadBehaviorTest extends AbstractTestCase
                 "Behavior should push generated LeadInterface if correct url provided"
             );
         }
+    }
+
+    public function testGeneratingFromCookie()
+    {
+        $transactionId = mt_rand();
+        $primeLeadCookie = '{"utm_source":"primelead","transaction_id":' . $transactionId . '}';
+        $this->behavior->cookie = new Cookie([
+            'name' => mt_rand(),
+            'value' => $primeLeadCookie,
+        ]);
+        $this->behavior->setLeadRepository(new LeadSessionRepository(mt_rand()));
+        $this->behavior->owner->trigger(Controller::EVENT_BEFORE_ACTION);
+
+        /** @var PrimeLeadLead $lead */
+        $lead = $this->behavior->getLeadRepository()->pull();
+        $this->assertInstanceOf(
+            PrimeLeadLead::class,
+            $lead,
+            "Behavior should parse cookie and push LeadInterface into repository"
+        );
+        $this->assertEquals(
+            $transactionId,
+            $lead->getTransactionId(),
+            "Behavior should correctly pass cookie into factory"
+        );
+    }
+
+    public function testGeneratingFromLazyLoadedCookie()
+    {
+        $transactionId = mt_rand();
+        $this->behavior->cookie = function () use ($transactionId) {
+            $primeLeadCookie = '{"utm_source":"primelead","transaction_id":' . $transactionId . '}';
+            return new Cookie([
+                'name' => mt_rand(),
+                'value' => $primeLeadCookie,
+            ]);
+        };
+        $this->behavior->setLeadRepository(new LeadSessionRepository(mt_rand()));
+        $this->behavior->owner->trigger(Controller::EVENT_BEFORE_ACTION);
+
+        /** @var PrimeLeadLead $lead */
+        $lead = $this->behavior->getLeadRepository()->pull();
+        $this->assertInstanceOf(
+            PrimeLeadLead::class,
+            $lead,
+            "Behavior should parse cookie and push LeadInterface into repository"
+        );
+        $this->assertEquals(
+            $transactionId,
+            $lead->getTransactionId(),
+            "Behavior should correctly pass cookie into factory"
+        );
+    }
+
+    public function testPassingInvalidCookieCallable()
+    {
+        $this->expectException(InvalidConfigException::class);
+        $this->behavior->cookie = function () {
+            return null;
+        };
+        $this->behavior->owner->trigger(Controller::EVENT_BEFORE_ACTION);
+    }
+
+    public function testLazyLoadingChildFactories()
+    {
+        $this->behavior->factories = function () {
+            return [
+                new SalesDoublerLeadFactory(),
+            ];
+        };
+        $this->behavior->url = $notSalesDoublerUrl = "https://google.com/?utm_source=primelead&transaction_id=1";
+        $this->behavior->owner->trigger(Controller::EVENT_BEFORE_ACTION);
+        $this->assertNull(
+            $this->behavior->getLeadRepository()->pull(),
+            "Behavior must correctly pass lazy loaded factories list to common " . LeadFactory::class
+        );
     }
 }
