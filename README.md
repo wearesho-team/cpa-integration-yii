@@ -24,11 +24,11 @@ Database repository for CPA conversions
 (includes [ActiveRecord model](./src/Models/StoredConversionRecord.php) and [migration](./migrations/m170910_122053_create_stored_conversion_table.php)).
 
 ### Behaviors
-1. [LeadBehavior](./docs/LeadBehavior) - 
+1. [LeadBehavior](./docs/LeadBehavior.md) - 
 Allow you to catch lead and store it in LeadRepository
-2. [ConversionBehavior](./docs/ConversionBehavior) - 
+2. [ConversionBehavior](./docs/ConversionBehavior.md) - 
 Allow you to convert lead from LeadRepository to conversion 
-(using ConversionRepository to save it)
+(using ConversionRepository to save it and PostbackService to send information to lead generator)
 
 ### Migrations
 In your project directory, after library installation
