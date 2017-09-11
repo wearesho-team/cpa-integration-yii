@@ -30,6 +30,17 @@ Allow you to catch lead and store it in LeadRepository
 Allow you to convert lead from LeadRepository to conversion 
 (using ConversionRepository to save it)
 
+### Migrations
+In your project directory, after library installation
+```bash
+php yii migrate --migrationPath=vendor/wearesho-team/cpa-integration-yii/migrations
+```
+
+### Installation
+```bash
+composer require wearesho-team/cpa-integration-yii
+```
+
 
 ## Contributors
 1. [Alexander <horat1us> Letnikow](https://github.com/Horat1us)
