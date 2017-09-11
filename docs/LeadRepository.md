@@ -22,6 +22,10 @@ use Wearesho\Cpa\SalesDoubler\Lead as SalesDoublerLead;
 
 $users = UsersRepository::getActive();
 foreach($users as $user) {
+    if(!array_key_exists($user->id, $_POST)) {
+        continue;
+    }
+    
     $repository = new LeadRepository($user);
     $repository->push(new SalesDoublerLead($_POST[$user->id]["click_id"]));
 }
@@ -34,7 +38,9 @@ use \Wearesho\Cpa\Yii\Models\StoredLeadInterface;
 
 $model = new CustomStoredLeadActiveRecord();
 if(!$model instanceof StoredLeadInterface) {
-    throw new UnexpectedValueException("Custom model must implement interface");
+    throw new UnexpectedValueException(
+        "Custom model must implement interface"
+    );
 }
 // Just pass model instance to constructor
 $repository = new LeadRepository(null, $model); 
