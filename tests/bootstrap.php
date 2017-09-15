@@ -1,6 +1,6 @@
 <?php
 
-use \Wearesho\Cpa\Yii\Tests\User;
+use Wearesho\Cpa\Yii\Tests\User;
 
 use yii\console\Application;
 
@@ -10,6 +10,7 @@ use yii\db\Connection;
 use yii\web\Session;
 use yii\web\Request as WebRequest;
 use yii\web\Response as WebResponse;
+use yii\web\User as WebUser;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 require_once dirname(__DIR__) . '/vendor/yiisoft/yii2/Yii.php';
@@ -32,7 +33,8 @@ function init_application()
                 'dsn' => 'sqlite:' . $_ENV['DB_PATH'],
             ],
             'user' => [
-                'class' => User::class,
+                'class' => WebUser::class,
+                'identityClass' => User::class,
             ],
             'session' => [
                 'class' => Session::class,
@@ -48,6 +50,7 @@ function init_application()
     ];
 
     \Yii::$app = new Application($config);
+    \Yii::$app->user->setIdentity(new User);
     foreach (new DirectoryIterator(dirname(__DIR__) . "/migrations") as $file) {
         if (!$file->isFile()) {
             continue;

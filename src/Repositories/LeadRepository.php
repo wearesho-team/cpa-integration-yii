@@ -35,7 +35,7 @@ class LeadRepository implements LeadRepositoryInterface
     public function __construct(IdentityInterface $identity = null, StoredLeadInterface $lead = null)
     {
         $this->storeLeadModel = $lead ?? new StoredLead;
-        $this->identity = $identity ?? \Yii::$app->user;
+        $this->identity = $identity ?? \Yii::$app->user->getIdentity();
     }
 
     /**
