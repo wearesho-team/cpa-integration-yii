@@ -35,7 +35,7 @@ class LeadRepository implements LeadRepositoryInterface
     public function __construct(IdentityInterface $identity = null, StoredLeadInterface $lead = null)
     {
         $this->storeLeadModel = $lead ?? new StoredLead;
-        $this->identity = $identity ?? \Yii::$app->user->getIdentity();
+        $this->identity = $identity;
     }
 
     /**
@@ -50,8 +50,8 @@ class LeadRepository implements LeadRepositoryInterface
      */
     public function push(LeadInterface $lead)
     {
-        if (!$this->identity->getId()) {
-            throw new InvalidIdException($this->identity);
+        if (!$this->getIdentity()->getId()) {
+            throw new InvalidIdException($this->getIdentity());
         }
 
         $previousModel = $this->findModel();
@@ -63,7 +63,7 @@ class LeadRepository implements LeadRepositoryInterface
 
         /** @var StoredLeadInterface $model */
         $model = new $modelClass;
-        $model->setIdentity($this->identity);
+        $model->setIdentity($this->getIdentity());
         $model->setLead($lead);
         // @codeCoverageIgnoreStart
         if (!$model->save() && $model instanceof Model) {
@@ -78,8 +78,8 @@ class LeadRepository implements LeadRepositoryInterface
      */
     public function pull()
     {
-        if (empty($this->identity->getId())) {
-            throw new InvalidIdException($this->identity);
+        if (empty($this->getIdentity()->getId())) {
+            throw new InvalidIdException($this->getIdentity());
         }
 
         $model = $this->findModel();
@@ -97,7 +97,15 @@ class LeadRepository implements LeadRepositoryInterface
     private function findModel()
     {
         return $this->storeLeadModel->find()
-            ->andWhere(['=', 'user_id', $this->identity->getId()])
+            ->andWhere(['=', 'user_id', $this->getIdentity()->getId()])
             ->one();
+    }
+
+    /**
+     * @return IdentityInterface
+     */
+    private function getIdentity(): IdentityInterface
+    {
+        return $this->identity ?? \Yii::$app->user->getIdentity();
     }
 }
